@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dphome
+spec:
+  replicas: 2 
+  selector:
+    matchLabels:
+      app: nginx-multi
+  template:
+    metadata:
+      labels:
+        app: nginx-multi
+    spec:
+      containers:
+
+      - name: nginx
+        image: nginx:latest
+        # ports:
+        # - containerPort: 80
+        env:
+        - name: HTTP_PORT
+          value: "80"
+    
+      - name: multitool
+        image: wbitt/network-multitool
+        ports:
+        - containerPort: 1180
+        env:
+        - name: HTTP_PORT
+          value: "1180"
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: dphome-svc
+spec:
+  selector:
+    app: nginx-multi
+  ports:
+  - port: 80
+    targetPort: 80 
+ 
