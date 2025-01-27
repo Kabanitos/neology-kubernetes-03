@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-web
+spec:
+  selector:
+    matchLabels:
+      app: app-web 
+  template:
+    metadata:
+      labels:
+        app: app-web
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+        ports:
+        - containerPort: 80
+      initContainers:
+      - name: init-myservice
+        image: busybox:latest
+        command: ['sh', '-c', "until nslookup nginxsvc.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for nginxsvc; sleep 2; done"]
+
